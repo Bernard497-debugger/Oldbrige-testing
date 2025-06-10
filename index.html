@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload to Supabase</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body>
+  <h2>Upload Media</h2>
+  <input type="file" id="fileInput">
+  <button onclick="uploadFile()">Upload</button>
+
+  <script>
+    const supabaseUrl = 'https://zlpsabhiwvuewnwtzdhh.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpscHNhYmhpd3Z1ZXdud3R6ZGhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0NDc3OTksImV4cCI6MjA2NTAyMzc5OX0.1xkyXvf3VyG5kRIQqOBfn_1TjXO3OA0_zNLhL5PCzsE';
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    async function uploadFile() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert('Please select a file');
+        return;
+      }
+
+      const filePath = `${Date.now()}_${file.name}`;
+      console.log('Uploading file:', filePath);
+
+      const { data, error } = await supabase.storage.from('media').upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+      if (error) {
+        console.error('Upload error:', error.message);
+        alert('Upload failed. Check console for error.');
+      } else {
+        console.log('Upload success:', data);
+        alert('File uploaded successfully!');
+      }
+    }
+  </script>
+</body>
+</html>
